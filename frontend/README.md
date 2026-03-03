@@ -1,70 +1,225 @@
-# Getting Started with Create React App
+# 🚀 CEP Address Manager - Fullstack Application
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A fullstack web application for managing users with automatic address retrieval based on Brazilian ZIP codes (CEP).
 
-## Available Scripts
+This project was developed as a technical challenge for a Full-Stack position, demonstrating clean architecture, validation, API integration, and modern frontend practices.
 
-In the project directory, you can run:
+---
 
-### `npm start`
+## 📌 Project Overview
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+The application allows users to:
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- Create users with name, CPF, and CEP
+- Automatically fetch address information from ViaCEP API
+- List all saved users
+- Update existing users
+- Delete users
+- Validate CPF, CEP, and required fields
+- Handle errors professionally with proper HTTP status codes
+- Display responsive and modern UI
 
-### `npm test`
+---
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## 🛠 Tech Stack
 
-### `npm run build`
+### 🔹 Backend
+- Java 17
+- Spring Boot 4
+- Spring Data JPA
+- PostgreSQL
+- Bean Validation (Jakarta Validation)
+- RESTful API
+- Global Exception Handling
+- CORS Configuration
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### 🔹 Frontend
+- React 18
+- Axios
+- Manual input masking (CPF & CEP)
+- Responsive CSS
+- Modern UI design
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+---
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## 🧠 Architecture Highlights
 
-### `npm run eject`
+### Backend
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+- Clean separation of layers:
+  - Controller
+  - Service
+  - Repository
+  - DTO
+  - Entity
+  - Exception Handler
+- DTO used to decouple API layer from persistence layer
+- Global error handling with `@RestControllerAdvice`
+- CPF uniqueness validation (HTTP 409 Conflict)
+- Bean Validation:
+  - `@NotBlank`
+  - `@Pattern`
+  - `@Size`
+- Automatic address lookup via ViaCEP API
+- Centralized CORS configuration
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Frontend
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+- Axios integration with backend API
+- CPF and CEP masking compatible with React 18
+- Form validation feedback
+- Success and error visual alerts
+- Delete confirmation dialog
+- Responsive layout
+- Clean and organized UI
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+---
 
-## Learn More
+## 📂 Project Structure
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+cep-address-manager-fullstack/
+│
+├── backend/
+│ ├── controller/
+│ ├── service/
+│ ├── repository/
+│ ├── entity/
+│ ├── dto/
+│ ├── exception/
+│ ├── config/
+│ └── application.properties
+│
+├── frontend/
+│ ├── src/
+│ │ ├── App.js
+│ │ ├── App.css
+│ │ └── ...
+│ └── package.json
+│
+└── README.md
 
-To learn React, check out the [React documentation](https://reactjs.org/).
 
-### Code Splitting
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## ⚙️ How to Run the Project
 
-### Analyzing the Bundle Size
+### 🔹 1. Clone the Repository
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+```bash
+git clone https://github.com/fp-torres/cep-address-manager-fullstack.git
+cd cep-address-manager-fullstack
 
-### Making a Progressive Web App
+🔹 Backend Setup
+Configure PostgreSQL
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+Create a database:
 
-### Advanced Configuration
+CREATE DATABASE cep_address_manager_fullstack;
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+Update application.properties:
 
-### Deployment
+spring.datasource.url=jdbc:postgresql://localhost:5432/cep_address_manager_fullstack
+spring.datasource.username=postgres
+spring.datasource.password=YOUR_PASSWORD
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
 
-### `npm run build` fails to minify
+Run Backend
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+cd backend
+./mvnw spring-boot:run
+
+Backend will run at:
+
+http://localhost:8080
+
+🔹 Frontend Setup
+
+cd frontend
+npm install
+npm start
+
+Frontend will run at:
+
+http://localhost:3000
+
+🔌 API Endpoints
+Create User
+POST /usuarios
+List Users
+GET /usuarios
+Update User
+PUT /usuarios/{id}
+Delete User
+DELETE /usuarios/{id}
+
+📥 Example Request (Create User)
+{
+  "nome": "Felipe Torres",
+  "cpf": "12345678901",
+  "cep": "20040002"
+}
+
+The backend automatically fetches:
+
+logradouro
+
+bairro
+
+cidade
+
+estado
+
+❗ Error Handling
+Scenario	HTTP Status
+Invalid input	400 Bad Request
+Duplicate CPF	409 Conflict
+User not found	400 / 404
+Server error	500
+🎨 UI Features
+
+Modern gradient layout
+
+Card-based design
+
+Responsive layout
+
+CPF and CEP formatted automatically
+
+Visual success and error feedback
+
+Delete confirmation dialog
+
+🔐 Validation Rules
+
+Name: required, 3–100 characters
+
+CPF: exactly 11 digits
+
+CEP: exactly 8 digits
+
+CPF must be unique
+
+🚀 Future Improvements
+
+Edit user functionality in frontend
+
+Auto-fetch CEP while typing
+
+Toast notifications
+
+Loading animations
+
+Authentication layer
+
+Deployment (Render + Vercel)
+
+👨‍💻 Author
+
+Felipe Torres
+Full-Stack Developer
+
+📄 License
+
+This project was developed for technical evaluation purposes.
