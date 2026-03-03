@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.torres.backend.entity.Usuario;
 import com.torres.backend.repository.UsuarioRepository;
+import com.torres.backend.dto.UsuarioRequestDTO;
 import com.torres.backend.dto.ViaCepResponse;
 
 @Service
@@ -18,11 +19,21 @@ public class UsuarioService {
         this.viaCepService = viaCepService;
     }
 
-    public Usuario criar(Usuario usuario) {
+    // =========================
+    // CREATE
+    // =========================
+    public Usuario criar(UsuarioRequestDTO dto) {
 
-        // Busca endereço automaticamente pelo CEP
-        ViaCepResponse endereco = viaCepService.buscarEndereco(usuario.getCep());
+        if (repository.existsByCpf(dto.getCpf())) {
+            throw new RuntimeException("CPF already registered");
+        }
 
+        ViaCepResponse endereco = viaCepService.buscarEndereco(dto.getCep());
+
+        Usuario usuario = new Usuario();
+        usuario.setNome(dto.getNome());
+        usuario.setCpf(dto.getCpf());
+        usuario.setCep(dto.getCep());
         usuario.setLogradouro(endereco.getLogradouro());
         usuario.setBairro(endereco.getBairro());
         usuario.setCidade(endereco.getLocalidade());
@@ -31,21 +42,33 @@ public class UsuarioService {
         return repository.save(usuario);
     }
 
+    // =========================
+    // READ
+    // =========================
     public List<Usuario> listar() {
         return repository.findAll();
     }
 
-    public Usuario atualizar(Long id, Usuario dados) {
+    // =========================
+    // UPDATE
+    // =========================
+    public Usuario atualizar(Long id, UsuarioRequestDTO dto) {
 
         Usuario usuario = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
-        // Atualiza endereço automaticamente caso o CEP mude
-        ViaCepResponse endereco = viaCepService.buscarEndereco(dados.getCep());
+        // Verifica CPF duplicado (caso esteja alterando CPF)
+        if (!usuario.getCpf().equals(dto.getCpf()) &&
+                repository.existsByCpf(dto.getCpf())) {
 
-        usuario.setNome(dados.getNome());
-        usuario.setCpf(dados.getCpf());
-        usuario.setCep(dados.getCep());
+            throw new RuntimeException("CPF already registered");
+        }
+
+        ViaCepResponse endereco = viaCepService.buscarEndereco(dto.getCep());
+
+        usuario.setNome(dto.getNome());
+        usuario.setCpf(dto.getCpf());
+        usuario.setCep(dto.getCep());
         usuario.setLogradouro(endereco.getLogradouro());
         usuario.setBairro(endereco.getBairro());
         usuario.setCidade(endereco.getLocalidade());
@@ -54,10 +77,15 @@ public class UsuarioService {
         return repository.save(usuario);
     }
 
+    // =========================
+    // DELETE
+    // =========================
     public void deletar(Long id) {
+
         if (!repository.existsById(id)) {
             throw new RuntimeException("Usuário não encontrado");
         }
+
         repository.deleteById(id);
     }
 }
